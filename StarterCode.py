@@ -13,10 +13,10 @@ from Queue import *
 import math
 
 # bounds of the window, in lat/long
-LEFTLON = 18.055
-RIGHTLON = 18.125
-TOPLAT = 42.675
-BOTLAT = 42.635
+LEFTLON = -78.9241000 #18.055
+RIGHTLON = -78.8690000 #18.125
+TOPLAT = 43.9621000 #42.675
+BOTLAT = 43.9351000 #42.635
 WIDTH = RIGHTLON-LEFTLON
 HEIGHT = TOPLAT-BOTLAT
 # ratio of one degree of longitude to one degree of latitude 
@@ -237,7 +237,8 @@ class PlanWin(Frame):
                 self.whatis[((int)(nextpix[0]),(int)(nextpix[1]))] = nlist[n+1]
                 w.create_line(thispix[0],thispix[1],nextpix[0],nextpix[1])
                 thispix = nextpix
-        thispix = self.lat_lon_to_pix(self.nodes[coastnodes[0]].pos)
+        if len(coastnodes):
+            thispix = self.lat_lon_to_pix(self.nodes[coastnodes[0]].pos)
         # also draw the coast:
         for n in range(len(coastnodes)-1):
             nextpix = self.lat_lon_to_pix(self.nodes[coastnodes[n+1]].pos)
@@ -285,7 +286,7 @@ def build_elevs(efilename):
 
 def build_graph(elevs):
     ''' Build the search graph from the OpenStreetMap XML. '''
-    tree = ET.parse('dbv.osm')
+    tree = ET.parse('myFiles/UOIT/uoitmap.osm')
     root = tree.getroot()
 
     nodes = dict()
@@ -342,12 +343,14 @@ def build_graph(elevs):
                         thisn = nextn                
                 ways[wayid].nodes = nlist
     print len(coastnodes)
-    print coastnodes[0]
-    print nodes[coastnodes[0]]
+    if len(coastnodes):
+        print coastnodes[0]
+        print nodes[coastnodes[0]]
     return nodes, ways, coastnodes
 
-elevs = build_elevs("n43w114.bil")
+elevs = build_elevs("myFiles/UOIT/n43_w079_1arc_v2_bil/n43_w079_1arc_v2.bil")
 nodes, ways, coastnodes = build_graph(elevs)
+# nodes, ways = build_graph(elevs)
 
 master = Tk()
 thewin = PlanWin(master,nodes,ways,coastnodes,elevs)
