@@ -13,15 +13,15 @@ from Queue import *
 import math
 
 # bounds of the window, in lat/long
-LEFTLON = -78.9241000 #18.055
-RIGHTLON = -78.8690000 #18.125
-TOPLAT = 43.9621000 #42.675
-BOTLAT = 43.9351000 #42.635
+LEFTLON = -78.9425000 #18.055
+RIGHTLON = -78.8236000 #18.125
+TOPLAT = 43.9682000 #42.675
+BOTLAT = 43.9237000 #42.635
 WIDTH = RIGHTLON-LEFTLON
 HEIGHT = TOPLAT-BOTLAT
 # ratio of one degree of longitude to one degree of latitude 
 LONRATIO = math.cos(TOPLAT*3.1415/180)
-WINWID = 800
+WINWID = 1000
 WINHGT = (int)((WINWID/LONRATIO)*HEIGHT/WIDTH)
 TOXPIX = WINWID/WIDTH
 TOYPIX = WINHGT/HEIGHT
@@ -36,7 +36,13 @@ def node_dist(n1, n2):
     dx = (n2.pos[0]-n1.pos[0])*MPERLON
     dy = (n2.pos[1]-n1.pos[1])*MPERLAT
     return math.sqrt(dx*dx+dy*dy) # in meters
- 
+
+def elev_dist(n1, n2):
+    return n2.elev - n1.elev 
+
+def pythag(a, b):
+    return math.sqrt(a**2 + b**2)
+
 class Node():
     ''' Graph (map) node, not a search node! '''
     __slots__ = ('id', 'pos', 'ways', 'elev')
@@ -93,7 +99,9 @@ class Planner():
         Heuristic function is just straight-line (flat) distance.
         Since the actual cost only adds to this distance, this is admissible.
         '''
-        return node_dist(node,gnode)
+        return pythag(elev_dist(node, gnode), node_dist(node, gnode))
+        # return node_dist(node,gnode)
+        
     
     def plan(self,s,g):
         '''
@@ -150,9 +158,9 @@ class PlanWin(Frame):
 
     def lat_lon_to_elev(self,latlon):
         # row is 0 for 43N, 1201 (EPIX) for 42N
-        row = (int)((43 - latlon[0]) * EPIX)
+        row = (int)((43.9682000 - latlon[0]) * EPIX)
         # col is 0 for 18 E, 1201 for 19 E
-        col = (int)((latlon[1]-18) * EPIX)
+        col = (int)((latlon[1]-78.9425000) * EPIX)
         return self.elevs[row*EPIX+col]
 
     def maphover(self,event):
@@ -281,12 +289,15 @@ def build_elevs(efilename):
     estr = efile.read()
     elevs = []
     for spot in range(0,len(estr),2):
-        elevs.append(struct.unpack('>h',estr[spot:spot+2])[0])
+        # elevs.append(struct.unpack('<H',estr[spot:spot+2])[0])
+        elevs.append(struct.unpack('<h',estr[spot:spot+2])[0])
+    
+    # print elevs
     return elevs
 
 def build_graph(elevs):
     ''' Build the search graph from the OpenStreetMap XML. '''
-    tree = ET.parse('myFiles/UOIT/uoitmap.osm')
+    tree = ET.parse('myFiles/UOIT2/uoit2.osm')
     root = tree.getroot()
 
     nodes = dict()
@@ -348,7 +359,7 @@ def build_graph(elevs):
         print nodes[coastnodes[0]]
     return nodes, ways, coastnodes
 
-elevs = build_elevs("myFiles/UOIT/n43_w079_1arc_v2_bil/n43_w079_1arc_v2.bil")
+elevs = build_elevs("myFiles/UOIT2/n43_w079_3arc_v2_bil/n43_w079_3arc_v2.bil")
 nodes, ways, coastnodes = build_graph(elevs)
 # nodes, ways = build_graph(elevs)
 
