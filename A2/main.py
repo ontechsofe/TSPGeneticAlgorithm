@@ -1,8 +1,8 @@
 from pandas import read_csv
-from graph import Graph
 from time import time
+from graph import Graph
+from nature import Nature
 
-POP_SIZE = 100
 
 def setup_graph(df, cities) -> Graph:
     g = Graph()
@@ -20,6 +20,8 @@ def main():
     cities = list(df.columns)[1:]
     g = setup_graph(df, cities)
     end_setup = time()
+    
+    n = Nature(g)
     
     # Prints all the relations in the graph
     # for v in g:

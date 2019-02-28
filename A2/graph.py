@@ -2,7 +2,7 @@ from vertex import Vertex
 
 class Graph:
     def __init__(self):
-        self.vert_dict = {}
+        self.vert_dict = dict()
         self.num_vertices = 0
 
     def __iter__(self):
