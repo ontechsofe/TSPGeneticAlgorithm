@@ -8,7 +8,6 @@ class Nature:
         self.pop = Population(list(g.get_vertices())[:], POP_SIZE)
         self.POP_SIZE = POP_SIZE
         self.env = g
-        self.calc_fitness()
     
     def calc_fitness(self):
         '''

@@ -7,6 +7,7 @@ class Population:
         self.populate(cities)
         self.maximum = float('inf')
         self.minimum = -1
+        self.best = None
     
     def populate(self, cities):
         for _ in range(0, self.num_pop):
@@ -23,6 +24,7 @@ class Population:
         dist = [s.dist for s in self.sale_squad]
         self.minimum = min(dist)
         self.maximum = max(dist)
+        self.best = self.sale_squad[dist.index(self.minimum)]
         for s in self.sale_squad:
             s.calc_fitness(self.maximum, self.minimum)
-        print(f'MAX: {self.maximum}\nMIN: {self.minimum}')
+        # print(f'MAX: {self.maximum}\nMIN: {self.minimum}')
