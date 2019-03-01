@@ -1,4 +1,4 @@
-from brain import Brain
+from .brain import Brain
 
 class Salesman:
     def __init__(self, cities):

@@ -1,6 +1,5 @@
-from population import Population
+from .population import Population
 from random import uniform, randint
-from numpy import array
 
 class Nature:
     def __init__(self, g, POP_SIZE=100):

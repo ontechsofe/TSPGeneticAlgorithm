@@ -1,7 +1,7 @@
 from pandas import read_csv
 from time import time
-from graph import Graph
-from nature import Nature
+from data_structs.graph import Graph
+from objects.nature import Nature
 
 
 def setup_graph(df, cities) -> Graph:
@@ -16,7 +16,7 @@ def setup_graph(df, cities) -> Graph:
 def main():
     start = time()
     start_setup = time()
-    df = read_csv('data_set1.csv', index_col=False)
+    df = read_csv('./data/data_set1.csv', index_col=False)
     cities = list(df.columns)[1:]
     g = setup_graph(df, cities)
     end_setup = time()

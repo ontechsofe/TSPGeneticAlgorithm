@@ -1,4 +1,4 @@
-from salesman import Salesman
+from .salesman import Salesman
 
 class Population:
     def __init__(self, cities, num=100):
