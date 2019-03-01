@@ -21,7 +21,7 @@ def main():
     g = setup_graph(df, cities)
     end_setup = time()
     
-    n = Nature(g)
+    n = Nature(g, 100)
 
     count = 0
     minimum = float('inf')
