@@ -21,18 +21,19 @@ def main():
     g = setup_graph(df, cities)
     end_setup = time()
     
-    n = Nature(g, 100)
+    n = Nature(g, 200)
 
     count = 0
     minimum = float('inf')
     best = None
-    while count < 200:
+    while count < 100:
         n.calc_fitness()
         n.new_generation()
         new_min = n.pop.minimum
         if new_min < minimum:
             minimum = new_min
-            print(f'BEST: {n.pop.best.brain.get_dir()}\nMIN: {n.pop.best.dist}')
+            best = n.pop.best
+            print(f'BEST: {best.get_dir()}\nMIN: {best.dist}')
             count = 0
         else:
             count += 1
