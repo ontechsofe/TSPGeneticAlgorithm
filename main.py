@@ -1,8 +1,30 @@
-from pandas import read_csv
+from pandas import read_csv, DataFrame
 from time import time
 from data_structs.graph import Graph
 from objects.nature import Nature
+from math import sqrt
 
+POPULATION = 1000
+TERMINATION = 500
+
+def euclidean_distance(x1, y1, x2, y2):
+    if x2 == x1 and y2 == y1:
+        return 0
+    elif x2 - x1 == 0:
+        return abs(int(y2-y1))
+    elif y2 - y1 == 0:
+        return abs(int(x2-x1))
+    return int(sqrt((y2-y1)**2 + (x2-x1)**2))
+
+
+def generate_df(pos, cities):
+    df = DataFrame()
+    for i in cities:
+        d = list()
+        for j in cities:
+            d.append(euclidean_distance(pos[i][0], pos[i][1], pos[j][0], pos[j][1]))
+        df[i] = d
+    return df
 
 def setup_graph(df, cities) -> Graph:
     g = Graph()
@@ -13,20 +35,29 @@ def setup_graph(df, cities) -> Graph:
             g.add_edge(cities[v0], cities[v1], df[cities[v0]][v1])
     return g
 
+
 def main():
-    start = time()
-    start_setup = time()
-    df = read_csv('./data/data_set1.csv', index_col=False)
-    cities = list(df.columns)[1:]
+    distance = input(
+        "Click ENTER for the distances data set\nOR any other key for the (x, y) positional data set: ")
+    df = None
+    cities = None
+    if not distance:
+        df = read_csv('./data/data_distances.csv', index_col=False)
+        cities = list(df.columns)[1:]
+    else:
+        positions = read_csv('./data/data_positional.csv', index_col=False)
+        cities = list(positions.columns)[1:]
+        df = generate_df(positions, cities)
+
     g = setup_graph(df, cities)
-    end_setup = time()
-    
-    n = Nature(g, 200)
+
+    start = time()
+    n = Nature(g, POPULATION)
 
     count = 0
     minimum = float('inf')
     best = None
-    while count < 100:
+    while count < TERMINATION:
         n.calc_fitness()
         n.new_generation()
         new_min = n.pop.minimum
@@ -37,16 +68,10 @@ def main():
             count = 0
         else:
             count += 1
-    
-    # Prints all the relations in the graph
-    # for v in g:
-    #     for w in v.get_connections():
-    #         vid = v.get_id()
-    #         wid = w.get_id()
-    #         print(f'( {vid} , {wid}, {v.get_weight(w)})')
+
     end = time()
-    print(f'Setup Runtime: {end_setup - start_setup}')
     print(f'Total Runtime: {end - start}')
+
 
 if __name__ == '__main__':
     main()
