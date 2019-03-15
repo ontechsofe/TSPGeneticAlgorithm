@@ -39,6 +39,7 @@ def setup_graph(df, cities) -> Graph:
 def main():
     distance = input(
         "Click ENTER for the distances data set\nOR any other key for the (x, y) positional data set: ")
+    positions = None
     df = None
     cities = None
     population_size = None
