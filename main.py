@@ -4,8 +4,6 @@ from data_structs.graph import Graph
 from objects.nature import Nature
 from math import sqrt
 
-POPULATION = 1000
-TERMINATION = 500
 
 def euclidean_distance(x1, y1, x2, y2):
     if x2 == x1 and y2 == y1:
@@ -22,9 +20,11 @@ def generate_df(pos, cities):
     for i in cities:
         d = list()
         for j in cities:
-            d.append(euclidean_distance(pos[i][0], pos[i][1], pos[j][0], pos[j][1]))
+            d.append(euclidean_distance(
+                pos[i][0], pos[i][1], pos[j][0], pos[j][1]))
         df[i] = d
     return df
+
 
 def setup_graph(df, cities) -> Graph:
     g = Graph()
@@ -41,23 +41,29 @@ def main():
         "Click ENTER for the distances data set\nOR any other key for the (x, y) positional data set: ")
     df = None
     cities = None
+    population_size = None
+    termination_condition = None
     if not distance:
         df = read_csv('./data/data_distances.csv', index_col=False)
         cities = list(df.columns)[1:]
+        population_size = 100
+        termination_condition = 80
     else:
         positions = read_csv('./data/data_positional.csv', index_col=False)
         cities = list(positions.columns)[1:]
         df = generate_df(positions, cities)
+        population_size = 1000
+        termination_condition = 100
 
     g = setup_graph(df, cities)
 
     start = time()
-    n = Nature(g, POPULATION)
+    n = Nature(g, population_size)
 
     count = 0
     minimum = float('inf')
     best = None
-    while count < TERMINATION:
+    while count < termination_condition:
         n.calc_fitness()
         n.new_generation()
         new_min = n.pop.minimum
