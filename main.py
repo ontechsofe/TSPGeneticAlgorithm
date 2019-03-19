@@ -3,16 +3,17 @@ from time import time
 from data_structs.graph import Graph
 from objects.nature import Nature
 from math import sqrt
+from matplotlib.pyplot import plot, show
 
 
 def euclidean_distance(x1, y1, x2, y2):
     if x2 == x1 and y2 == y1:
         return 0
     elif x2 - x1 == 0:
-        return abs(int(y2-y1))
+        return abs(y2-y1)
     elif y2 - y1 == 0:
-        return abs(int(x2-x1))
-    return int(sqrt((y2-y1)**2 + (x2-x1)**2))
+        return abs(x2-x1)
+    return sqrt((y2-y1)**2 + (x2-x1)**2)
 
 
 def generate_df(pos, cities):
@@ -54,7 +55,7 @@ def main():
         cities = list(positions.columns)[1:]
         df = generate_df(positions, cities)
         population_size = 1000
-        termination_condition = 100
+        termination_condition = 80
 
     g = setup_graph(df, cities)
 
@@ -78,6 +79,18 @@ def main():
 
     end = time()
     print(f'Total Runtime: {end - start}')
+    # print(best.get_dir()[:len(best.get_dir())-1])
+    if distance:
+        x_values = [positions[i][0]
+                    for i in best.get_dir()[:len(best.get_dir())-1]]
+        y_values = [positions[i][1]
+                    for i in best.get_dir()[:len(best.get_dir())-1]]
+        print(best.get_dir())
+        # print(x_values)
+        # print(y_values)
+        plot_data = DataFrame({'x': x_values, 'y': y_values})
+        plot('x', 'y', data=plot_data, linestyle='-', marker='o')
+        show()
 
 
 if __name__ == '__main__':

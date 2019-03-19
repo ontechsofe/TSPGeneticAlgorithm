@@ -20,7 +20,9 @@ class Brain:
         directions = self.dir[1:len(self.dir)-1]
         for x in directions:
             if uniform(0.0, 1.0) < mutate_rate:
-                r = randint(0, len(directions)-1)
                 i = directions.index(x)
-                directions[i], directions[r] = directions[r], directions[i]
+                if i == 0:
+                    directions[i], directions[i+1] = directions[i+1], directions[i]
+                else:
+                    directions[i], directions[i-1] = directions[i-1], directions[i]
         self.dir = self.dir[0:1] + directions + self.dir[0:1]
