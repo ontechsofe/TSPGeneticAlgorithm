@@ -94,8 +94,8 @@ def main():
         positions = read_csv('./data/data_positional.csv', index_col=False)
         cities = list(positions.columns)[1:]
         df = generate_df(positions, cities)
-        population_size = 100
-        termination_condition = 1000
+        population_size = 2500
+        termination_condition = 100
 
     g = setup_graph(df, cities)
 
