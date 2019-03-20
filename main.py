@@ -2,18 +2,57 @@ from pandas import read_csv, DataFrame
 from time import time
 from data_structs.graph import Graph
 from objects.nature import Nature
-from math import sqrt
-from matplotlib.pyplot import plot, show
+# from math import sqrt
+from matplotlib.pyplot import plot, show, title
+
+def calc_coord_two(c0, c1, a, d, upper=True):
+    if upper:
+        return c0 + a*(c1 - c0)/d
+    # return c0 - a*(c1 - c0)/d
+
+def calc_coord_three():
+    pass
+
+def circles_intersection_coords(p0, p1, r0, r1, p2=None, r2=None):
+    d = ((p1[1]-p0[1])**2 + (p1[0]-p0[0])**2)**(0.5)
+    if d > r0 + r1:
+        raise Exception(
+            'No intersection between circles <{p0[0]}, {p0[1]}, RADIUS: {r0}>, <{p1[0]}, {p1[1]}, RADIUS: {r1}>')
+    elif d < abs(r0 - r1):
+        raise Exception(
+            'No intersection between circles <{p0[0]}, {p0[1]}, RADIUS: {r0}>, <{p1[0]}, {p1[1]}, RADIUS: {r1}>')
+    elif d == 0 and r0 == r1:
+        raise Exception(
+            'Infinite intersection between circles <{p0[0]}, {p0[1]}, RADIUS: {r0}>, <{p1[0]}, {p1[1]}, RADIUS: {r1}>')
+    elif d == r0 + r1:
+        a = (r0**2 - r1**2 + d**2)/(2*d)
+        return [calc_coord_two(p0[0], p1[0], a, d), calc_coord_two(p0[1], p1[1], a, d)]
+    elif not p2:
+        a = (r0**2 - r1**2 + d**2)/(2*d)
+        h = (r0**2 - a**2)**(0.5)
+        p2 = [calc_coord_two(p0[0], p1[0], a, d), calc_coord_two(p0[1], p1[1], a, d)]
+        return [int(p2[0] + h*(p1[1] - p0[1])/d), int(p2[1] - h*(p1[0] - p0[0])/d)], [int(p2[0] - h*(p1[1] - p0[1])/d), int(p2[1] + h*(p1[0] - p0[0])/d)]
+    else:
+        a = (r0**2 - r1**2 + d**2)/(2*d)
+        h = (r0**2 - a**2)**(0.5)
+        p2 = [p0[0] + a*(p1[0] - p0[0])/d, p0[1] + a*(p1[1] - p0[1])/d]
+        lower = [int(p2[0] + h*(p1[1] - p0[1])/d),
+                 int(p2[1] - h*(p1[0] - p0[0])/d)]
+        upper = [int(p2[0] - h*(p1[1] - p0[1])/d),
+                 int(p2[1] + h*(p1[0] - p0[0])/d)]
+        if abs(euclidean_distance(lower[0], lower[1], p2[0], p2[1]) - r2) < abs(euclidean_distance(upper[0], upper[1], p2[0], p2[1]) - r2):
+            return lower
+        return upper
 
 
-def euclidean_distance(x1, y1, x2, y2):
-    if x2 == x1 and y2 == y1:
+def euclidean_distance(x0, y0, x1, y1):
+    if x1 == x0 and y1 == y0:
         return 0
-    elif x2 - x1 == 0:
-        return abs(y2-y1)
-    elif y2 - y1 == 0:
-        return abs(x2-x1)
-    return sqrt((y2-y1)**2 + (x2-x1)**2)
+    elif x1 - x0 == 0:
+        return int(abs(y1-y0))
+    elif y1 - y0 == 0:
+        return int(abs(x1-x0))
+    return int(((y1-y0)**2 + (x1-x0)**2)**(0.5))
 
 
 def generate_df(pos, cities):
@@ -38,59 +77,58 @@ def setup_graph(df, cities) -> Graph:
 
 
 def main():
-    distance = input(
+    data_type = input(
         "Click ENTER for the distances data set\nOR any other key for the (x, y) positional data set: ")
+    start = time()
     positions = None
     df = None
     cities = None
     population_size = None
     termination_condition = None
-    if not distance:
+    if not data_type:
         df = read_csv('./data/data_distances.csv', index_col=False)
         cities = list(df.columns)[1:]
-        population_size = 100
-        termination_condition = 80
+        population_size = 50
+        termination_condition = 1000
     else:
         positions = read_csv('./data/data_positional.csv', index_col=False)
         cities = list(positions.columns)[1:]
         df = generate_df(positions, cities)
-        population_size = 1000
-        termination_condition = 80
+        population_size = 100
+        termination_condition = 1000
 
     g = setup_graph(df, cities)
 
-    start = time()
     n = Nature(g, population_size)
-
-    count = 0
-    minimum = float('inf')
-    best = None
-    while count < termination_condition:
-        n.calc_fitness()
-        n.new_generation()
-        new_min = n.pop.minimum
-        if new_min < minimum:
-            minimum = new_min
-            best = n.pop.best
-            print(f'BEST: {best.get_dir()}\nMIN: {best.dist}')
-            count = 0
-        else:
-            count += 1
+    best = n.run(termination_condition)
 
     end = time()
     print(f'Total Runtime: {end - start}')
-    # print(best.get_dir()[:len(best.get_dir())-1])
-    if distance:
+    x_values = None
+    y_values = None
+    if data_type:
         x_values = [positions[i][0]
                     for i in best.get_dir()[:len(best.get_dir())-1]]
         y_values = [positions[i][1]
                     for i in best.get_dir()[:len(best.get_dir())-1]]
-        print(best.get_dir())
-        # print(x_values)
-        # print(y_values)
-        plot_data = DataFrame({'x': x_values, 'y': y_values})
-        plot('x', 'y', data=plot_data, linestyle='-', marker='o')
-        show()
+    else:
+        coords = dict()
+        coords[cities[0]] = [0, 0]
+        coords[cities[1]] = [df[cities[1]][0], 0]
+        coords[cities[2]] = circles_intersection_coords(
+            coords[cities[0]], coords[cities[1]], df[cities[2]][0], df[cities[2]][1])[1]
+        for x in cities[3:len(cities)]:
+            coords[x] = circles_intersection_coords(
+                coords[cities[0]], coords[cities[1]], df[x][0], df[x][1], coords[cities[2]], df[x][2])
+        x_values = [coords[i][0]
+                    for i in best.get_dir()[:len(best.get_dir())-1]]
+        y_values = [coords[i][1]
+                    for i in best.get_dir()[:len(best.get_dir())-1]]
+
+    plot_data = DataFrame({'x_val': x_values, 'y_val': y_values})
+    plot('x_val', 'y_val', data=plot_data, linestyle='-', marker='o')
+    title(f'Total Distance Travelled: {best.get_dist()}')
+    show()
 
 
 if __name__ == '__main__':

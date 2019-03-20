@@ -11,11 +11,7 @@ class Brain:
 
     def get_dir(self):
         return self.dir
-    
-    def clone(self):
-        clone = Brain(self.dir)
-        return clone
-    
+
     def mutate(self, mutate_rate=0.01):
         directions = self.dir[1:len(self.dir)-1]
         for x in directions:
