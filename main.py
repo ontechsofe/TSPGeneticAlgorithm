@@ -9,6 +9,7 @@ from matplotlib.pyplot import plot, show, title
 def calc_coord_two(c0, c1, a, d):
     return c0 + a*(c1 - c0)/d
 
+
 def circles_intersection_coords(p0, p1, r0, r1, p2=None, r2=None):
     d = ((p1[1]-p0[1])**2 + (p1[0]-p0[0])**2)**(0.5)
     if d > r0 + r1:
@@ -26,7 +27,8 @@ def circles_intersection_coords(p0, p1, r0, r1, p2=None, r2=None):
     elif not p2:
         a = (r0**2 - r1**2 + d**2)/(2*d)
         h = (r0**2 - a**2)**(0.5)
-        p2 = [calc_coord_two(p0[0], p1[0], a, d), calc_coord_two(p0[1], p1[1], a, d)]
+        p2 = [calc_coord_two(p0[0], p1[0], a, d),
+              calc_coord_two(p0[1], p1[1], a, d)]
         return [int(p2[0] + h*(p1[1] - p0[1])/d), int(p2[1] - h*(p1[0] - p0[0])/d)], [int(p2[0] - h*(p1[1] - p0[1])/d), int(p2[1] + h*(p1[0] - p0[0])/d)]
     else:
         a = (r0**2 - r1**2 + d**2)/(2*d)

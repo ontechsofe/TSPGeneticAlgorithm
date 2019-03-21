@@ -10,7 +10,7 @@ class Vertex:
         self.adjacent[neighbor] = weight
 
     def get_connections(self):
-        return self.adjacent.keys()  
+        return self.adjacent.keys()
 
     def get_id(self):
         return self.id

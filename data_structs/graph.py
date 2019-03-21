@@ -1,5 +1,6 @@
 from .vertex import Vertex
 
+
 class Graph:
     def __init__(self):
         self.vert_dict = dict()
@@ -40,7 +41,7 @@ class Graph:
 #     g.add_vertex('e')
 #     g.add_vertex('f')
 
-#     g.add_edge('a', 'b', 7)  
+#     g.add_edge('a', 'b', 7)
 #     g.add_edge('a', 'c', 9)
 #     g.add_edge('a', 'f', 14)
 #     g.add_edge('b', 'c', 10)
