@@ -3,7 +3,7 @@ from time import time
 from data_structs.graph import Graph
 from objects.nature import Nature
 # from math import sqrt
-from matplotlib.pyplot import plot, show, title
+from matplotlib.pyplot import plot, show, title, text
 
 
 def calc_coord_two(c0, c1, a, d):
@@ -129,6 +129,10 @@ def main():
     plot_data = DataFrame({'x_val': x_values, 'y_val': y_values})
     plot('x_val', 'y_val', data=plot_data, linestyle='-', marker='o')
     title(f'Total Distance Travelled: {best.get_dist()}')
+    for i, city in enumerate(cities):
+        x = x_values[i]
+        y = y_values[i]
+        text(x+5, y+5, city, fontsize=9)
     show()
 
 
