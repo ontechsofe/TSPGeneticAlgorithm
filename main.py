@@ -86,13 +86,13 @@ def main():
     if not data_type:
         df = read_csv('./data/data_distances.csv', index_col=False)
         cities = list(df.columns)[1:]
-        population_size = 100
+        population_size = 80
         termination_condition = 100
     else:
         positions = read_csv('./data/data_positional.csv', index_col=False)
         cities = list(positions.columns)[1:]
         df = generate_df(positions, cities)
-        population_size = 2500
+        population_size = 1000
         termination_condition = 100
 
     g = setup_graph(df, cities)
