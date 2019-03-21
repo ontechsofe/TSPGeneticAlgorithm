@@ -1,4 +1,5 @@
 from .population import Population
+from .salesman import Salesman
 from random import uniform, randint
 from copy import deepcopy
 
@@ -16,6 +17,7 @@ class Nature:
         best = None
         while count < termination_condition:
             self.calc_fitness()
+            self.natural_selection()
             self.new_generation()
             new_min = self.pop.minimum
             if new_min < minimum:
@@ -34,26 +36,22 @@ class Nature:
         self.pop.calc_fitness(self.env)
 
     def new_generation(self):
-        self.natural_selection()
-        p1 = None
-        for s in self.pop.sale_squad:
-            if s.get_fitness() == 1.0:
-                p1 = s
-                break
-        p2 = self.pop.sale_squad[randint(0, len(self.pop.sale_squad)-1)]
-        self.make_baby(p1, p2)
         while len(self.pop.sale_squad) < self.POP_SIZE:
             p1 = self.pop.sale_squad[randint(0, len(self.pop.sale_squad)-1)]
             p2 = self.pop.sale_squad[randint(0, len(self.pop.sale_squad)-1)]
-            self.make_baby(p1, p2)
+            c1, c2 = self.make_baby(p1, p2)
+            self.pop.add_salesman(c1)
+            if len(self.pop.sale_squad) < self.POP_SIZE:
+                self.pop.add_salesman(c2)
         for s in self.pop.sale_squad:
             s.brain.mutate()
+        self.generation += 1
+        # print(self.generation)
 
     def natural_selection(self):
         '''
         Removing unfit salesman based on natural selection
         '''
-        self.generation += 1
         for s in self.pop.sale_squad:
             rand = uniform(0, 1)
             if rand > s.get_fitness():
@@ -71,8 +69,7 @@ class Nature:
         p1_spliced = [x for x in p1_dir if x not in p2_dir[0:splice_point]]
         c1 = source + p1_dir[0:splice_point] + p2_spliced + source
         c2 = source + p2_dir[0:splice_point] + p1_spliced + source
-        self.pop.add_salesman(c1)
-        self.pop.add_salesman(c2)
+        return c1, c2
 
         # source = p1.get_dir()[0:1]
         # p1_dir = p1.get_dir()[1:len(p1.get_dir())-1]

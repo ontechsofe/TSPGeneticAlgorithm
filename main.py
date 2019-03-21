@@ -5,13 +5,9 @@ from objects.nature import Nature
 # from math import sqrt
 from matplotlib.pyplot import plot, show, title
 
-def calc_coord_two(c0, c1, a, d, upper=True):
-    if upper:
-        return c0 + a*(c1 - c0)/d
-    # return c0 - a*(c1 - c0)/d
 
-def calc_coord_three():
-    pass
+def calc_coord_two(c0, c1, a, d):
+    return c0 + a*(c1 - c0)/d
 
 def circles_intersection_coords(p0, p1, r0, r1, p2=None, r2=None):
     d = ((p1[1]-p0[1])**2 + (p1[0]-p0[0])**2)**(0.5)
@@ -88,8 +84,8 @@ def main():
     if not data_type:
         df = read_csv('./data/data_distances.csv', index_col=False)
         cities = list(df.columns)[1:]
-        population_size = 50
-        termination_condition = 1000
+        population_size = 100
+        termination_condition = 100
     else:
         positions = read_csv('./data/data_positional.csv', index_col=False)
         cities = list(positions.columns)[1:]
@@ -111,6 +107,8 @@ def main():
                     for i in best.get_dir()[:len(best.get_dir())-1]]
         y_values = [positions[i][1]
                     for i in best.get_dir()[:len(best.get_dir())-1]]
+        x_values.append(positions[cities[0]][0])
+        y_values.append(positions[cities[0]][1])
     else:
         coords = dict()
         coords[cities[0]] = [0, 0]
@@ -124,7 +122,8 @@ def main():
                     for i in best.get_dir()[:len(best.get_dir())-1]]
         y_values = [coords[i][1]
                     for i in best.get_dir()[:len(best.get_dir())-1]]
-
+        x_values.append(coords[cities[0]][0])
+        y_values.append(coords[cities[0]][1])
     plot_data = DataFrame({'x_val': x_values, 'y_val': y_values})
     plot('x_val', 'y_val', data=plot_data, linestyle='-', marker='o')
     title(f'Total Distance Travelled: {best.get_dist()}')
