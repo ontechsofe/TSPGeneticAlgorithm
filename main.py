@@ -129,10 +129,10 @@ def main():
     plot_data = DataFrame({'x_val': x_values, 'y_val': y_values})
     plot('x_val', 'y_val', data=plot_data, linestyle='-', marker='o')
     title(f'Total Distance Travelled: {best.get_dist()}')
-    for i, city in enumerate(cities):
+    for i, label in enumerate(best.get_dir()):
         x = x_values[i]
         y = y_values[i]
-        text(x+5, y+5, city, fontsize=9)
+        text(x+5, y+5, label, fontsize=9)
     show()
 
 
